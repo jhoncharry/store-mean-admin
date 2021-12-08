@@ -1,0 +1,171 @@
+<!-- Page title-->
+<div class="border-bottom pt-5 mt-2 mb-5">
+  <h1 class="mt-2 mt-md-4 mb-3 pt-5">Clientes</h1>
+  <div class="d-flex flex-wrap flex-md-nowrap justify-content-between">
+    <p class="text-muted">Este módulo lista todos los clientes de la tienda.</p>
+    <p class="font-size-sm font-weight-medium pl-md-4">
+      <a class="text-nowrap" [routerLink]="['/panel/clientes/registro']"
+        >Registrar nuevo<i
+          class="cxi-angle-right font-size-base align-middle ml-1"
+        ></i
+      ></a>
+    </p>
+  </div>
+</div>
+
+<div class="card box-shadow-sm">
+  <div class="card-header">
+    <h5 style="margin-bottom: 0px">Filtro de clientes</h5>
+  </div>
+  <div class="card-header">
+    <form class="form-inline pt-2">
+      <label class="sr-only" for="inline-form-input-name">Apellidos</label>
+      <input
+        class="form-control mb-3 mr-sm-4"
+        type="text"
+        (keyup)="filtro('apellidos')"
+        [(ngModel)]="filtro_apellido"
+        name="filtro_apellido"
+        id="inline-form-input-name"
+        placeholder="Lastname"
+      />
+      <label class="sr-only" for="inline-form-input-username">Correo</label>
+      <div class="input-group mb-3 mr-sm-4">
+        <div class="input-group-prepend">
+          <div class="input-group-text">@</div>
+        </div>
+        <input
+          class="form-control"
+          type="text"
+          (keyup)="filtro('correo')"
+          [(ngModel)]="filtro_correo"
+          name="filtro_correo"
+          id="inline-form-input-username"
+          placeholder="Email"
+        />
+      </div>
+    </form>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Lastname</th>
+            <th>Email</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="load_data">
+          <tr>
+            <td class="text-center" colspan="5">
+              <div
+                class="spinner-border"
+                style="width: 3rem; height: 3rem"
+                role="status"
+              >
+                <span class="visually-hidden"></span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="!load_data">
+          <tr
+            *ngFor="
+              let client of clients
+                | slice: (page - 1) * pageSize:(page - 1) * pageSize + pageSize;
+              let indice = index
+            "
+          >
+            <th scope="row">{{ indice + 1 }}</th>
+            <td>{{ client.name }}</td>
+            <td>{{ client.lastname }}</td>
+            <td>{{ client.email }}</td>
+            <td>
+              <div class="btn-group dropdown">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  Options
+                </button>
+                <div class="dropdown-menu">
+                  <a
+                    [routerLink]="['/panel/clientes', client._id]"
+                    class="dropdown-item"
+                    >Edit</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    style="cursor: pointer"
+                    data-toggle="modal"
+                    [attr.data-target]="'#delete-' + client._id"
+                    >Delete</a
+                  >
+                </div>
+              </div>
+
+              <div
+                class="modal fade"
+                id="delete-{{ client._id }}"
+                tabindex="-1"
+                style="display: none"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">
+                        Eliminar, {{ client.name }} {{ client.lastname }}
+                      </h4>
+                      <button
+                        class="close"
+                        type="button"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p>Desea eliminar este cliente?</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        class="btn btn-secondary btn-sm"
+                        type="button"
+                        data-dismiss="modal"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        class="btn btn-primary btn-shadow btn-sm"
+                        (click)="deleteClient(client._id)"
+                        type="button"
+                      >
+                        Si, eliminar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card-footer" *ngIf="clients">
+    <ngb-pagination
+      [(page)]="page"
+      [pageSize]="pageSize"
+      [collectionSize]="clients.length"
+    >
+    </ngb-pagination>
+  </div>
+</div>

@@ -3,6 +3,7 @@ import { ClientService } from 'src/app/services/client.service';
 
 declare var jQuery: any;
 declare var $: any;
+
 declare var iziToast: any;
 
 @Component({

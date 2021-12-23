@@ -45,5 +45,37 @@ export class AdminService {
     return this.http.post(this.url + 'admin/login', formData);
   }
 
-  
+  // Configuraciones
+  getConfig() {
+    return this.http.get(this.url + `/admin/config`, this.headers);
+  }
+
+  // Configuraciones
+  getPublicConfig() {
+    return this.http.get(this.url + `/client/config`);
+  }
+
+  updateConfig(id: any, data: any, file: any) {
+    if (!file) {
+      return this.http.put(
+        this.url + `/admin/config/${id}`,
+        data,
+        this.headers
+      );
+    } else {
+      const formData = new FormData();
+
+      formData.append('titulo', data.titulo);
+      formData.append('serie', data.serie);
+      formData.append('correlativo', data.correlativo);
+      formData.append('categorias', JSON.stringify(data.categorias));
+      formData.append('logo', file);
+
+      return this.http.put(
+        this.url + `/admin/config/${id}`,
+        formData,
+        this.headers
+      );
+    }
+  }
 }

@@ -7,7 +7,10 @@ const base_url = environment.api;
   name: 'imagen',
 })
 export class ImagePipe implements PipeTransform {
-  transform(img: string, tipo: 'productos' | 'clientes'): string {
+  transform(
+    img: string,
+    tipo: 'productos' | 'clientes' | 'configuraciones' | 'productos-galeria'
+  ): string {
     if (!img) {
       return `${base_url}/admin/upload/clientes/no-image`;
     } else if (img.includes('https')) {

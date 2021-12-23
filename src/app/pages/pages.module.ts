@@ -18,6 +18,12 @@ import { IndexProductoComponent } from './components/productos/index-producto/in
 import { ImageModule } from '../pipes/image.module';
 import { UpdateProductComponent } from './components/productos/update-product/update-product.component';
 import { InventarioProductoComponent } from './components/productos/inventario-producto/inventario-producto.component';
+import { CreateCuponComponent } from './components/cupones/create-cupon/create-cupon.component';
+import { IndexCuponComponent } from './components/cupones/index-cupon/index-cupon.component';
+import { UpdateCuponComponent } from './components/cupones/update-cupon/update-cupon.component';
+import { ConfigComponent } from './components/config/config.component';
+import { VariedadProductoComponent } from './components/productos/variedad-producto/variedad-producto.component';
+import { GaleriaProductoComponent } from './components/productos/galeria-producto/galeria-producto.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +37,12 @@ import { InventarioProductoComponent } from './components/productos/inventario-p
     IndexProductoComponent,
     UpdateProductComponent,
     InventarioProductoComponent,
+    CreateCuponComponent,
+    IndexCuponComponent,
+    UpdateCuponComponent,
+    ConfigComponent,
+    VariedadProductoComponent,
+    GaleriaProductoComponent,
   ],
   exports: [
     PagesComponent,

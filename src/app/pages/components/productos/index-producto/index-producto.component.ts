@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from 'src/app/services/product.service';
 
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
+
 declare var jQuery: any;
 declare var $: any;
 
@@ -13,6 +16,7 @@ declare var iziToast: any;
 })
 export class IndexProductoComponent implements OnInit {
   products: Array<any>;
+  array_products: Array<any> = [];
 
   filtro_title: string = '';
 
@@ -32,7 +36,20 @@ export class IndexProductoComponent implements OnInit {
   initialData() {
     this.productService.getProducts(null).subscribe({
       next: (resp: any) => {
-        this.products = resp.data;
+        if (resp.data) {
+          this.products = resp.data;
+          this.products.forEach((element) => {
+            this.array_products.push({
+              title: element.title,
+              stock: element.stock,
+              price: element.price,
+              categoria: element.categoria,
+              numero_ventas: element.numero_ventas,
+            });
+          });
+        }
+
+        console.log('NEW ARRAY', this.array_products);
         this.load_data = false;
       },
       error: (error) => {
@@ -100,6 +117,39 @@ export class IndexProductoComponent implements OnInit {
       error: (error) => {
         console.log('error', error);
       },
+    });
+  }
+
+  downloadExcel() {
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Reporte de productos');
+
+    worksheet.addRow(undefined);
+    for (let x1 of this.array_products) {
+      let x2 = Object.keys(x1);
+
+      let temp = [];
+      for (let y of x2) {
+        temp.push(x1[y]);
+      }
+      worksheet.addRow(temp);
+    }
+
+    let fname = 'REP01- ';
+
+    worksheet.columns = [
+      { header: 'Producto', key: 'col1', width: 30 },
+      { header: 'Stock', key: 'col2', width: 15 },
+      { header: 'Precio', key: 'col3', width: 15 },
+      { header: 'Categoria', key: 'col4', width: 25 },
+      { header: 'N° ventas', key: 'col5', width: 15 },
+    ] as any;
+
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      fs.saveAs(blob, fname + '-' + new Date().valueOf() + '.xlsx');
     });
   }
 }

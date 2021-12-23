@@ -1,0 +1,157 @@
+<!-- Page title-->
+<div class="border-bottom pt-5 mt-2 mb-5">
+  <h1 class="mt-2 mt-md-4 mb-3 pt-5">Productos</h1>
+  <div class="d-flex flex-wrap flex-md-nowrap justify-content-between">
+    <p class="text-muted">
+      Este módulo se establece las configuraciones de la tiends.
+    </p>
+  </div>
+</div>
+
+<div class="card box-shadow-sm" *ngIf="product">
+  <div class="card-header">
+    <h5 style="margin-bottom: 0px">Variedad de producto</h5>
+  </div>
+
+  <div class="card-body">
+    <div style="max-width: 48rem">
+      <div class="row mb-5">
+        <div class="col-md-5" style="padding-right: 0px">
+          <!-- Square thumbnail -->
+          <img
+            [src]="product.portada | imagen: 'productos'"
+            style="height: auto"
+            class="img-thumbnail rounded-0"
+            alt="Square image"
+          />
+        </div>
+        <div class="col-md-7" style="padding-left: 0px">
+          <div
+            class="card"
+            style="height: 100% !important; background: #f5eeee"
+          >
+            <div class="card-body">
+              <h3 class="card-product-title text-truncate mb-2">
+                <a class="nav-link mb-3">{{ product.title }}</a>
+                <p class="text-muted">{{ product.description }}</p>
+                <div class="d-flex align-items-center">
+                  <span class="h5 d-inline-block mb-0 text-danger"
+                    >${{ product.price }}</span
+                  >
+                </div>
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row align-items-center">
+        <label
+          class="col-md-3 col-form-label font-weight-medium"
+          for="text-input"
+          >Titulo de la variedad</label
+        >
+        <div class="col-md-9">
+          <input
+            class="form-control"
+            type="text"
+            id="text-input"
+            [(ngModel)]="product.titulo_variedad"
+          />
+        </div>
+      </div>
+
+      <div class="form-group row align-items-center">
+        <label
+          class="col-md-3 col-form-label font-weight-medium"
+          for="text-input"
+          >Variedades</label
+        >
+        <div class="col-md-9">
+          <form class="form-inline pt-2">
+            <input
+              class="form-control mt-2"
+              [(ngModel)]="nueva_variedad"
+              name="nueva_variedad"
+              placeholder="Variedad"
+            />
+            <button
+              class="btn btn-primary ml-2 mt-2"
+              type="button"
+              (click)="addVariedad()"
+            >
+              Agregar
+            </button>
+          </form>
+        </div>
+
+        <div class="col-md-3"></div>
+        <div class="col-md-9">
+          <div class="table-responsive mt-3">
+            <table class="table table-sm">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Titulo</th>
+                  <th>Eliminar</th>
+                </tr>
+              </thead>
+              <ng-container
+                *ngIf="product !== null && product.variedades.length === 0"
+              >
+                <tbody>
+                  <tr>
+                    <td colspan="4" class="text-center">
+                      <span class="text-muted"
+                        >No hay variedades disponibles</span
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </ng-container>
+
+              <ng-container>
+                <tbody>
+                  <tr
+                    *ngFor="let item of product.variedades; let indice = index"
+                  >
+                    <td>
+                      {{ item.titulo }}
+                    </td>
+
+                    <td>
+                      <a
+                        style="cursor: pointer"
+                        class="text-danger"
+                        (click)="eliminarVariedades(indice)"
+                        >[Eliminar]</a
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </ng-container>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <button *ngIf="!load_btn" class="btn btn-primary mr-3" (click)="update()">
+      Guardar cambios
+    </button>
+    <!-- Button with growing spinner and text -->
+    <button
+      *ngIf="load_btn"
+      type="button"
+      class="btn btn-secondary mr-3"
+      disabled
+    >
+      <span
+        class="spinner-grow spinner-grow-sm me-2"
+        role="status"
+        aria-hidden="true"
+      ></span>
+      Updating...
+    </button>
+  </div>
+</div>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AdminService } from 'src/app/services/admin.service';
 import { ProductService } from 'src/app/services/product.service';
 
 declare var jQuery: any;
@@ -17,6 +18,7 @@ export class CreateProductoComponent implements OnInit {
   submitted = false;
 
   load_btn = false;
+  load_data = true;
 
   file: File | undefined;
   imgSelect: any | ArrayBuffer = 'assets/img/01.jpg';
@@ -31,6 +33,8 @@ export class CreateProductoComponent implements OnInit {
 
   config: any = {};
 
+  config_categorias: any;
+
   public registerForm = this.fb.group({
     title: ['Title 1', [Validators.required, Validators.minLength(3)]],
     stock: ['', [Validators.required]],
@@ -43,11 +47,39 @@ export class CreateProductoComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private adminService: AdminService
   ) {
     this.config = {
       height: 500,
     };
+
+    this.adminService.getPublicConfig().subscribe({
+      next: (resp: any) => {
+        console.log('RESPONSE', resp);
+
+        if (resp.data) {
+          this.config_categorias = resp.data;
+        }
+
+        this.load_data = false;
+        /* 
+          this.updateForm.reset();
+          this.router.navigateByUrl('/panel/clientes'); */
+      },
+      error: (error) => {
+        this.load_data = false;
+        console.log('error', error);
+        /*         iziToast.show({
+            title: 'ERROR',
+            titleColor: '#FF0000',
+            color: '#FFF',
+            class: 'text-danger',
+            position: 'topRight',
+            message: error.error.message,
+          }); */
+      },
+    });
   }
 
   ngOnInit(): void {}

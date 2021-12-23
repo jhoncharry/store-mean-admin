@@ -73,6 +73,36 @@ export class ProductService {
     }
   }
 
+  updateVariedadesProduct(id: any, data: any) {
+    return this.http.put(
+      this.url + `/admin/variedades/product/${id}`,
+      data,
+      this.headers
+    );
+  }
+
+  updateGaleriaProduct(id: any, data: any) {
+    console.log('INFORMAMAA', id, data);
+
+    const formData = new FormData();
+    formData.append('_id', data._id);
+    formData.append('imagen', data.imagen);
+
+    return this.http.put(
+      this.url + `/admin/galeria/product/${id}`,
+      formData,
+      this.headers
+    );
+  }
+
+  deleteGaleriaProduct(id: any, data: any) {
+    return this.http.put(
+      this.url + `/admin/galeria/delete/product/${id}`,
+      data,
+      this.headers
+    );
+  }
+
   deleteProduct(id: any) {
     return this.http.delete(this.url + `/admin/product/${id}`, this.headers);
   }

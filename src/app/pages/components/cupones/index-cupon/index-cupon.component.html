@@ -1,10 +1,10 @@
 <!-- Page title-->
 <div class="border-bottom pt-5 mt-2 mb-5">
-  <h1 class="mt-2 mt-md-4 mb-3 pt-5">Productos</h1>
+  <h1 class="mt-2 mt-md-4 mb-3 pt-5">Cupones</h1>
   <div class="d-flex flex-wrap flex-md-nowrap justify-content-between">
-    <p class="text-muted">Este módulo lista todos los clientes de la tienda.</p>
+    <p class="text-muted">Este módulo lista todos los cupones de la tienda.</p>
     <p class="font-size-sm font-weight-medium pl-md-4">
-      <a class="text-nowrap" [routerLink]="['/panel/productos/registro']"
+      <a class="text-nowrap" [routerLink]="['/panel/cupones/registro']"
         >Registrar nuevo<i
           class="cxi-angle-right font-size-base align-middle ml-1"
         ></i
@@ -15,28 +15,21 @@
 
 <div class="card box-shadow-sm">
   <div class="card-header">
-    <h5 style="margin-bottom: 0px">Filtro de productos</h5>
+    <h5 style="margin-bottom: 0px">Filtro de cupones</h5>
   </div>
   <div class="card-header">
     <form class="form-inline pt-2">
       <input
         class="form-control m-2"
-        [(ngModel)]="filtro_title"
-        name="filtro_title"
-        placeholder="Titulo del producto"
+        [(ngModel)]="filtro_codigo"
+        name="filtro_codigo"
+        placeholder="Codigo del cupon"
       />
       <button class="btn btn-primary m-2" type="button" (click)="filtro()">
         Filtrar
       </button>
       <button class="btn btn-primary m-2" type="button" (click)="resetear()">
         Resetear
-      </button>
-      <button
-        class="btn btn-success m-2"
-        type="button"
-        (click)="downloadExcel()"
-      >
-        Export a excel
       </button>
     </form>
   </div>
@@ -45,18 +38,16 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Title</th>
-            <th>Stock</th>
-            <th>Price</th>
-            <th>Categoria</th>
-            <th>Ventas</th>
+            <th>Codigo</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Limite</th>
             <th>Options</th>
           </tr>
         </thead>
         <tbody *ngIf="load_data">
           <tr>
-            <td class="text-center" colspan="7">
+            <td class="text-center" colspan="5">
               <div
                 class="spinner-border"
                 style="width: 3rem; height: 3rem"
@@ -70,28 +61,15 @@
         <tbody *ngIf="!load_data">
           <tr
             *ngFor="
-              let product of products
+              let cupon of cupones
                 | slice: (page - 1) * pageSize:(page - 1) * pageSize + pageSize;
               let indice = index
             "
           >
-            <th scope="row">{{ indice + 1 }}</th>
-            <td>
-              <h6 style="padding-bottom: 0; margin-bottom: 0">
-                <!-- Square thumbnail -->
-                <img
-                  style="width: 50px"
-                  [src]="product.portada | imagen: 'productos'"
-                  class="img-thumbnail rounded-0"
-                  alt="Square image"
-                />
-                {{ product.title }}
-              </h6>
-            </td>
-            <td>{{ product.stock }}</td>
-            <td>{{ product.price }}</td>
-            <td>{{ product.categoria }}</td>
-            <td>{{ product.numero_ventas }}</td>
+            <td>{{ cupon.codigo }}</td>
+            <td>{{ cupon.tipo }}</td>
+            <td>{{ cupon.valor }}</td>
+            <td>{{ cupon.limite }}</td>
             <td>
               <div class="btn-group dropdown">
                 <button
@@ -105,7 +83,7 @@
                 </button>
                 <div class="dropdown-menu">
                   <a
-                    [routerLink]="['/panel/productos', product._id]"
+                    [routerLink]="['/panel/cupones', cupon._id]"
                     class="dropdown-item"
                     >Edit</a
                   >
@@ -113,30 +91,15 @@
                     class="dropdown-item"
                     style="cursor: pointer"
                     data-toggle="modal"
-                    [attr.data-target]="'#delete-' + product._id"
+                    [attr.data-target]="'#delete-' + cupon._id"
                     >Delete</a
-                  >
-                  <a
-                    [routerLink]="['/panel/productos/inventario', product._id]"
-                    class="dropdown-item"
-                    >Inventario</a
-                  >
-                  <a
-                    [routerLink]="['/panel/productos/variedades', product._id]"
-                    class="dropdown-item"
-                    >Variedades</a
-                  >
-                  <a
-                    [routerLink]="['/panel/productos/galeria', product._id]"
-                    class="dropdown-item"
-                    >Galeria</a
                   >
                 </div>
               </div>
 
               <div
                 class="modal fade"
-                id="delete-{{ product._id }}"
+                id="delete-{{ cupon._id }}"
                 tabindex="-1"
                 style="display: none"
                 aria-hidden="true"
@@ -144,7 +107,7 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h4 class="modal-title">Eliminar, {{ product.title }}</h4>
+                      <h4 class="modal-title">Eliminar, {{ cupon.codigo }}</h4>
                       <button
                         class="close"
                         type="button"
@@ -155,7 +118,7 @@
                       </button>
                     </div>
                     <div class="modal-body">
-                      <p>Desea eliminar este product?</p>
+                      <p>Desea eliminar este cupon?</p>
                     </div>
                     <div class="modal-footer">
                       <button
@@ -167,7 +130,7 @@
                       </button>
                       <button
                         class="btn btn-primary btn-shadow btn-sm"
-                        (click)="deleteProduct(product._id)"
+                        (click)="deleteClient(cupon._id)"
                         type="button"
                       >
                         Si, eliminar
@@ -182,11 +145,11 @@
       </table>
     </div>
   </div>
-  <div class="card-footer" *ngIf="products">
+  <div class="card-footer" *ngIf="cupones">
     <ngb-pagination
       [(page)]="page"
       [pageSize]="pageSize"
-      [collectionSize]="products.length"
+      [collectionSize]="cupones.length"
     >
     </ngb-pagination>
   </div>

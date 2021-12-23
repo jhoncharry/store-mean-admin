@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProductService } from 'src/app/services/product.service';
-
 import { ImagePipe } from 'src/app/pipes/image.pipe';
 import { AdminService } from 'src/app/services/admin.service';
+
+import { v4 as uuidv4 } from 'uuid';
 
 declare var jQuery: any;
 declare var $: any;
@@ -12,21 +12,22 @@ declare var $: any;
 declare var iziToast: any;
 
 @Component({
-  selector: 'app-update-product',
-  templateUrl: './update-product.component.html',
-  styleUrls: ['./update-product.component.css'],
+  selector: 'app-config',
+  templateUrl: './config.component.html',
+  styleUrls: ['./config.component.css'],
   providers: [ImagePipe],
 })
-export class UpdateProductComponent implements OnInit {
+export class ConfigComponent implements OnInit {
   submitted = false;
 
   load_btn = false;
   load_data = true;
 
   private id: any;
-  product: any;
+  config: any;
 
-  previewImage: string;
+  titulo_categoria = '';
+  icono_categoria = '';
 
   file: File | undefined;
   imgSelect: any | ArrayBuffer = 'assets/img/01.jpg';
@@ -39,77 +40,39 @@ export class UpdateProductComponent implements OnInit {
     'image/jpeg',
   ];
 
-  config: any = {};
-
-  config_categorias: any;
-
   public updateForm = this.fb.group({
-    title: ['Title 1', [Validators.required, Validators.minLength(3)]],
-    stock: ['', [Validators.required]],
-    price: ['', [Validators.required]],
-    categoria: [null, [Validators.required]],
-    description: ['test1@gmail.com', [Validators.required]],
-    contenido: ['', [Validators.required]],
+    titulo: ['', [Validators.required, Validators.minLength(3)]],
+    serie: ['', [Validators.required]],
+    correlativo: ['', [Validators.required, Validators.minLength(2)]],
   });
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private productService: ProductService,
     private adminService: AdminService,
     private imagePipe: ImagePipe
   ) {
-    this.route.params.subscribe((params) => {
-      this.id = params['id'];
-
-      this.productService.getProduct(this.id).subscribe({
-        next: async (resp: any) => {
-          this.product = resp.data;
-
-          console.log(resp);
-
-          this.updateForm.setValue({
-            title: this.product.title || '',
-            stock: this.product.stock || '',
-            price: this.product.price || '',
-            categoria: this.product.categoria || null,
-            description: this.product.description || '',
-            contenido: this.product.contenido || '',
-          });
-
-          this.imgSelect = this.imagePipe.transform(
-            this.product.portada,
-            'productos'
-          );
-
-          this.load_data = false;
-          /* 
-          this.updateForm.reset();
-          this.router.navigateByUrl('/panel/clientes'); */
-        },
-        error: (error: any) => {
-          this.load_data = false;
-          console.log('error', error);
-          /*         iziToast.show({
-            title: 'ERROR',
-            titleColor: '#FF0000',
-            color: '#FFF',
-            class: 'text-danger',
-            position: 'topRight',
-            message: error.error.message,
-          }); */
-        },
-      });
-    });
-
-    this.adminService.getPublicConfig().subscribe({
+    this.adminService.getConfig().subscribe({
       next: (resp: any) => {
         console.log('RESPONSE', resp);
 
         if (resp.data) {
-          this.config_categorias = resp.data;
+          this.config = resp.data;
         }
+
+        console.log('VALORROROR', this.config);
+
+        this.updateForm.setValue({
+          titulo: this.config.titulo || '',
+          serie: this.config.serie || '',
+          correlativo: this.config.correlativo || '',
+        });
+
+        this.imgSelect = this.imagePipe.transform(
+          this.config.logo,
+          'configuraciones'
+        );
 
         this.load_data = false;
         /* 
@@ -138,8 +101,47 @@ export class UpdateProductComponent implements OnInit {
     return this.updateForm.controls;
   }
 
-  changeCategoria($event: any) {
-    this.getControl['categoria'].setValue($event.target.value);
+  addCategory() {
+    this.load_data = true;
+
+    let data;
+
+    if (this.titulo_categoria && this.icono_categoria) {
+      console.log(uuidv4());
+      this.config.categorias.push({
+        titulo: this.titulo_categoria,
+        icono: this.icono_categoria,
+        _id: uuidv4(),
+      });
+
+      this.titulo_categoria = '';
+      this.icono_categoria = '';
+
+      /*  console.log('1111');
+      data = this.filtro_title;
+      this.productService.getProducts(filtro).subscribe({
+        next: (resp: any) => {
+          console.log('dasdsa', resp);
+          this.products = resp.data;
+          this.load_data = false;
+        },
+        error: (error) => {
+          console.log('error', error);
+          this.load_data = false;
+        },
+      }); */
+    } else {
+      // this.initialData();
+      iziToast.show({
+        title: 'ERROR',
+        titleColor: '#FF0000',
+        color: '#FFF',
+        class: 'text-danger',
+        position: 'topRight',
+        message: 'Ingrese un los datos correspondiente',
+      });
+      this.load_data = false;
+    }
   }
 
   fileChangeEvent(event: any): void {
@@ -208,42 +210,54 @@ export class UpdateProductComponent implements OnInit {
     this.submitted = true;
     console.log('eeeeee', this.getControl);
     if (this.updateForm.invalid) {
+      iziToast.show({
+        title: 'ERROR',
+        titleColor: '#FF0000',
+        color: '#FFF',
+        class: 'text-danger',
+        position: 'topRight',
+        message: 'Datos del formulario no son validos',
+      });
       return;
     }
 
-    console.log(this.updateForm.value);
-    console.log(this.file);
     this.load_btn = true;
 
-    this.productService
-      .updateProduct(this.product._id, this.updateForm.value, this.file)
-      .subscribe({
-        next: (resp: any) => {
-          iziToast.show({
-            title: 'SUCCESS',
-            titleColor: '#1DC74C',
-            color: '#FFF',
-            class: 'text-success',
-            position: 'topRight',
-            message: 'Product successfully updated',
-          });
+    let data = {
+      categorias: this.config.categorias || '',
+      ...this.updateForm.value,
+    };
 
-          this.load_btn = false;
-          this.updateForm.reset();
-          this.router.navigateByUrl('/panel/productos');
-        },
-        error: (error: any) => {
-          console.log('error', error);
-          iziToast.show({
-            title: 'ERROR',
-            titleColor: '#FF0000',
-            color: '#FFF',
-            class: 'text-danger',
-            position: 'topRight',
-            message: error.error.message,
-          });
-          this.load_btn = false;
-        },
-      });
+    this.adminService.updateConfig(this.config._id, data, this.file).subscribe({
+      next: (resp: any) => {
+        iziToast.show({
+          title: 'SUCCESS',
+          titleColor: '#1DC74C',
+          color: '#FFF',
+          class: 'text-success',
+          position: 'topRight',
+          message: 'Cupon successfully updated',
+        });
+
+        this.load_btn = false;
+        this.updateForm.reset();
+        this.router.navigateByUrl('/');
+      },
+      error: (error) => {
+        console.log('error', error);
+        iziToast.show({
+          title: 'ERROR',
+          titleColor: '#FF0000',
+          color: '#FFF',
+          class: 'text-danger',
+          position: 'topRight',
+          message: error.error.message,
+        });
+      },
+    });
+  }
+
+  eliminarCategorias(index: any) {
+    this.config.categorias.splice(index, 1);
   }
 }

@@ -4,6 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ImagePipe } from 'src/app/pipes/image.pipe';
 import { ProductService } from 'src/app/services/product.service';
 
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
+
 declare var jQuery: any;
 declare var $: any;
 
@@ -24,6 +27,7 @@ export class InventarioProductoComponent implements OnInit {
   private id: any;
   product: any;
   inventarios: Array<any> = [];
+  array_inventarios: Array<any> = [];
 
   public registerInventarioForm = this.fb.group({
     cantidad: ['', [Validators.required, Validators.minLength(1)]],
@@ -52,6 +56,13 @@ export class InventarioProductoComponent implements OnInit {
 
               if (resp.data) {
                 this.inventarios = resp.data;
+                this.inventarios.forEach((element) => {
+                  this.array_inventarios.push({
+                    admin: element.admin.name + ' ' + element.admin.lastname,
+                    cantidad: element.cantidad,
+                    proveedor: element.proveedor,
+                  });
+                });
               }
 
               console.log('INVENTARIO z222222', this.inventarios);
@@ -201,6 +212,37 @@ export class InventarioProductoComponent implements OnInit {
       error: (error) => {
         console.log('error', error);
       },
+    });
+  }
+
+  downloadExcel() {
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Reporte de inventarios');
+
+    worksheet.addRow(undefined);
+    for (let x1 of this.array_inventarios) {
+      let x2 = Object.keys(x1);
+
+      let temp = [];
+      for (let y of x2) {
+        temp.push(x1[y]);
+      }
+      worksheet.addRow(temp);
+    }
+
+    let fname = 'REP01- ';
+
+    worksheet.columns = [
+      { header: 'Trabajador', key: 'col1', width: 30 },
+      { header: 'Cantidad', key: 'col2', width: 15 },
+      { header: 'Proveedor', key: 'col3', width: 25 },
+    ] as any;
+
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      fs.saveAs(blob, fname + '-' + new Date().valueOf() + '.xlsx');
     });
   }
 }

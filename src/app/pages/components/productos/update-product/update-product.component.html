@@ -69,7 +69,7 @@
                   required
                 />
               </div>
-              <div class="col-lg-4 form-group">
+              <div class="col-lg-4 form-group" *ngIf="config_categorias">
                 <label for="">Categoría</label>
                 <select
                   class="form-control custom-select"
@@ -77,10 +77,15 @@
                   (change)="changeCategoria($event)"
                   formControlName="categoria"
                 >
-                  <option value="null" selected disabled>Seleccionar</option>
-                  <option value="Categoria 1">Categoria 1</option>
-                  <option value="Categoria 2">Categoria 2</option>
-                  <option value="Categoria 3">Categoria 3</option>
+                  <option value="null" disabled selected>
+                    Choose the categoria
+                  </option>
+                  <option
+                    *ngFor="let item of config_categorias.categorias"
+                    [value]="item.titulo"
+                  >
+                    {{ item.titulo }}
+                  </option>
                 </select>
               </div>
 

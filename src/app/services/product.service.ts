@@ -49,7 +49,6 @@ export class ProductService {
 
   updateProduct(id: any, data: any, file: any) {
     if (!file) {
-      console.log('dadadad', data);
       return this.http.put(
         this.url + `/admin/product/${id}`,
         data,
@@ -82,8 +81,6 @@ export class ProductService {
   }
 
   updateGaleriaProduct(id: any, data: any) {
-    console.log('INFORMAMAA', id, data);
-
     const formData = new FormData();
     formData.append('_id', data._id);
     formData.append('imagen', data.imagen);
@@ -121,5 +118,12 @@ export class ProductService {
 
   deleteInventarioProduct(id: any) {
     return this.http.delete(this.url + `/admin/inventario/${id}`, this.headers);
+  }
+
+  getReviewsProduct(id: any) {
+    return this.http.get(
+      this.url + `/admin/reviews/product/${id}`,
+      this.headers
+    );
   }
 }

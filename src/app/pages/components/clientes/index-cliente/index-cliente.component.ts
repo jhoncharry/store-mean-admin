@@ -42,14 +42,12 @@ export class IndexClienteComponent implements OnInit {
 
   filtro(type: any) {
     this.load_data = true;
-    console.log('dadadasd', this.filtro_correo);
+
     let filtro;
 
     if (type === 'apellidos' && this.filtro_apellido) {
-      console.log('1111');
       filtro = this.filtro_apellido;
     } else if (type === 'correo' && this.filtro_correo) {
-      console.log('2222');
       filtro = this.filtro_correo;
     } else {
       this.initialData();
@@ -58,7 +56,6 @@ export class IndexClienteComponent implements OnInit {
 
     this.clientService.getClients(type, filtro).subscribe({
       next: (resp: any) => {
-        console.log('dasdsa', resp);
         this.clients = resp.data;
         this.load_data = false;
       },
@@ -71,7 +68,6 @@ export class IndexClienteComponent implements OnInit {
   deleteClient(id: any) {
     this.clientService.deleteClient(id).subscribe({
       next: (resp: any) => {
-        console.log('dasdsa', resp);
         iziToast.show({
           title: 'SUCCESS',
           titleColor: '#1DC74C',

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductService } from 'src/app/services/product.service';
 
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { DescuentoService } from 'src/app/services/descuento.service';
+import { ProductService } from 'src/app/services/product.service';
 
 declare var jQuery: any;
 declare var $: any;
@@ -10,13 +11,13 @@ declare var $: any;
 declare var iziToast: any;
 
 @Component({
-  selector: 'app-index-producto',
-  templateUrl: './index-producto.component.html',
-  styleUrls: ['./index-producto.component.css'],
+  selector: 'app-index-descuento',
+  templateUrl: './index-descuento.component.html',
+  styleUrls: ['./index-descuento.component.css'],
 })
-export class IndexProductoComponent implements OnInit {
-  products: Array<any>;
-  array_products: Array<any> = [];
+export class IndexDescuentoComponent implements OnInit {
+  descuentos: Array<any>;
+  array_descuentos: Array<any> = [];
 
   filtro_title: string = '';
 
@@ -27,25 +28,41 @@ export class IndexProductoComponent implements OnInit {
 
   url: string;
 
-  constructor(private productService: ProductService) {
+  constructor(private descuentoService: DescuentoService) {
     this.initialData();
   }
 
   ngOnInit(): void {}
 
   initialData() {
-    this.productService.getProducts(null).subscribe({
+    this.descuentoService.getDescuentos(null).subscribe({
       next: (resp: any) => {
         if (resp.data) {
-          this.products = resp.data;
-          this.products.forEach((element) => {
-            this.array_products.push({
+          this.descuentos = resp.data;
+          this.descuentos.forEach((element) => {
+            /*    this.array_descuentos.push({
               title: element.title,
               stock: element.stock,
               price: element.price,
               categoria: element.categoria,
               numero_ventas: element.numero_ventas,
-            });
+            }); */
+
+            let time_inicio =
+              Date.parse(element.fecha_inicio + 'T00:00:00') / 1000;
+            let time_fin = Date.parse(element.fecha_fin + 'T00:00:00') / 1000;
+
+            let today = Date.parse(new Date().toString()) / 1000;
+
+            if (today > time_inicio) {
+              element.estado = 'Expirado';
+            }
+            if (today < time_inicio) {
+              element.estado = 'Proximamente';
+            }
+            if (today >= time_inicio && today <= time_fin) {
+              element.estado = 'En progreso';
+            }
           });
         }
 
@@ -59,17 +76,17 @@ export class IndexProductoComponent implements OnInit {
 
   filtro() {
     this.load_data = true;
+
     let filtro;
 
     if (this.filtro_title) {
       filtro = this.filtro_title;
-      this.productService.getProducts(filtro).subscribe({
+      this.descuentoService.getDescuentos(filtro).subscribe({
         next: (resp: any) => {
-          this.products = resp.data;
+          this.descuentos = resp.data;
           this.load_data = false;
         },
         error: (error) => {
-          console.log('error', error);
           this.load_data = false;
         },
       });
@@ -92,8 +109,8 @@ export class IndexProductoComponent implements OnInit {
     this.initialData();
   }
 
-  deleteProduct(id: any) {
-    this.productService.deleteProduct(id).subscribe({
+  deleteDescuento(id: any) {
+    this.descuentoService.deleteDescuento(id).subscribe({
       next: (resp: any) => {
         iziToast.show({
           title: 'SUCCESS',
@@ -112,39 +129,6 @@ export class IndexProductoComponent implements OnInit {
       error: (error) => {
         console.log('error', error);
       },
-    });
-  }
-
-  downloadExcel() {
-    let workbook = new Workbook();
-    let worksheet = workbook.addWorksheet('Reporte de productos');
-
-    worksheet.addRow(undefined);
-    for (let x1 of this.array_products) {
-      let x2 = Object.keys(x1);
-
-      let temp = [];
-      for (let y of x2) {
-        temp.push(x1[y]);
-      }
-      worksheet.addRow(temp);
-    }
-
-    let fname = 'REP01- ';
-
-    worksheet.columns = [
-      { header: 'Producto', key: 'col1', width: 30 },
-      { header: 'Stock', key: 'col2', width: 15 },
-      { header: 'Precio', key: 'col3', width: 15 },
-      { header: 'Categoria', key: 'col4', width: 25 },
-      { header: 'N° ventas', key: 'col5', width: 15 },
-    ] as any;
-
-    workbook.xlsx.writeBuffer().then((data) => {
-      let blob = new Blob([data], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      fs.saveAs(blob, fname + '-' + new Date().valueOf() + '.xlsx');
     });
   }
 }

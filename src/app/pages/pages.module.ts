@@ -24,6 +24,13 @@ import { UpdateCuponComponent } from './components/cupones/update-cupon/update-c
 import { ConfigComponent } from './components/config/config.component';
 import { VariedadProductoComponent } from './components/productos/variedad-producto/variedad-producto.component';
 import { GaleriaProductoComponent } from './components/productos/galeria-producto/galeria-producto.component';
+import { CreateDescuentoComponent } from './components/descuento/create-descuento/create-descuento.component';
+import { EditDescuentoComponent } from './components/descuento/edit-descuento/edit-descuento.component';
+import { IndexDescuentoComponent } from './components/descuento/index-descuento/index-descuento.component';
+import { IndexContactoComponent } from './components/contacto/index-contacto/index-contacto.component';
+import { ReviewsProductoComponent } from './components/productos/reviews-producto/reviews-producto.component';
+import { IndexVentasComponent } from './components/ventas/index-ventas/index-ventas.component';
+import { DetalleVentasComponent } from './components/ventas/detalle-ventas/detalle-ventas.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +50,13 @@ import { GaleriaProductoComponent } from './components/productos/galeria-product
     ConfigComponent,
     VariedadProductoComponent,
     GaleriaProductoComponent,
+    CreateDescuentoComponent,
+    EditDescuentoComponent,
+    IndexDescuentoComponent,
+    IndexContactoComponent,
+    ReviewsProductoComponent,
+    IndexVentasComponent,
+    DetalleVentasComponent,
   ],
   exports: [
     PagesComponent,

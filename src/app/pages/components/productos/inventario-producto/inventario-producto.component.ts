@@ -25,6 +25,7 @@ export class InventarioProductoComponent implements OnInit {
   load_data = true;
 
   private id: any;
+
   product: any;
   inventarios: Array<any> = [];
   array_inventarios: Array<any> = [];
@@ -48,12 +49,8 @@ export class InventarioProductoComponent implements OnInit {
         next: async (resp: any) => {
           this.product = resp.data;
 
-          console.log(resp);
-
           this.productService.getInventarioProduct(this.product._id).subscribe({
             next: async (resp: any) => {
-              console.log('INVENTARIO', resp);
-
               if (resp.data) {
                 this.inventarios = resp.data;
                 this.inventarios.forEach((element) => {
@@ -64,8 +61,6 @@ export class InventarioProductoComponent implements OnInit {
                   });
                 });
               }
-
-              console.log('INVENTARIO z222222', this.inventarios);
             },
             error: (error: any) => {
               console.log('error', error);
@@ -131,8 +126,6 @@ export class InventarioProductoComponent implements OnInit {
 
     this.load_btn = true;
 
-    console.log(this.registerInventarioForm.value);
-
     let data = {
       product: this.product._id,
       ...this.registerInventarioForm.value,
@@ -140,7 +133,6 @@ export class InventarioProductoComponent implements OnInit {
 
     this.productService.createInventario(data).subscribe({
       next: (resp: any) => {
-        console.log('THE RESPONSE', resp);
         iziToast.show({
           title: 'SUCCESS',
           titleColor: '#1DC74C',
@@ -185,7 +177,6 @@ export class InventarioProductoComponent implements OnInit {
   deleteInventarioProduct(id: any) {
     this.productService.deleteInventarioProduct(id).subscribe({
       next: (resp: any) => {
-        console.log('dasdsa', resp);
         iziToast.show({
           title: 'SUCCESS',
           titleColor: '#1DC74C',

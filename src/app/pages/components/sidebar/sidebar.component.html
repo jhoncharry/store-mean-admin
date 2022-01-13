@@ -1,12 +1,6 @@
 <!-- Navbar-->
 <header
-  class="
-    navbar navbar-expand navbar-light
-    fixed-top
-    navbar-box-shadow
-    bg-light
-    px-3 px-lg-4
-  "
+  class="navbar navbar-expand navbar-light fixed-top navbar-box-shadow bg-light px-3 px-lg-4"
   data-scroll-header
   data-fixed-element
 >
@@ -27,7 +21,7 @@
   </button>
   <ul class="navbar-nav ml-auto d-none d-lg-flex align-items-center">
     <li class="nav-item">
-      <a class="nav-link py-0" href="../components/typography.html">
+      <a class="nav-link py-0" [routerLink]="['/']">
         <i class="cxi-profile align-middle mt-n1 mr-2"></i>
         Cuenta
       </a>
@@ -61,14 +55,8 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div
-    class="
-      d-flex d-lg-none
-      align-items-center
-      py-4
-      px-3
-      border-bottom border-light
-    "
+  <!--   <div
+    class="d-flex d-lg-none align-items-center py-4 px-3 border-bottom border-light"
   >
     <a class="btn btn-primary btn-block mr-3 px-4" href="index.html"
       ><i class="cxi-eye mt-n1 mr-2"></i>Preview</a
@@ -78,7 +66,7 @@
       href="../components/typography.html"
       ><i class="cxi-layouts mt-n1 mr-2"></i>Components</a
     >
-  </div>
+  </div> -->
   <div
     class="cs-offcanvas-body px-0 pt-4 pb-grid-gutter"
     data-simplebar
@@ -114,10 +102,29 @@
       >
       <a
         class="nav-link px-4"
+        [routerLink]="['/panel/descuentos']"
+        routerLinkActive="active"
+        >Descuentos</a
+      >
+      <a
+        class="nav-link px-4"
+        [routerLink]="['/panel/contacto']"
+        routerLinkActive="active"
+        >Mensajes</a
+      >
+      <a
+        class="nav-link px-4"
+        [routerLink]="['/panel/ventas']"
+        routerLinkActive="active"
+        >Ventas</a
+      >
+      <a
+        class="nav-link px-4"
         [routerLink]="['/panel/configuraciones']"
         routerLinkActive="active"
         >Configuraciones</a
       >
+      <a class="nav-link px-4" (click)="logout()">Log out</a>
     </nav>
   </div>
 </aside>

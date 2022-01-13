@@ -67,8 +67,6 @@ export class UpdateProductComponent implements OnInit {
         next: async (resp: any) => {
           this.product = resp.data;
 
-          console.log(resp);
-
           this.updateForm.setValue({
             title: this.product.title || '',
             stock: this.product.stock || '',
@@ -105,8 +103,6 @@ export class UpdateProductComponent implements OnInit {
 
     this.adminService.getPublicConfig().subscribe({
       next: (resp: any) => {
-        console.log('RESPONSE', resp);
-
         if (resp.data) {
           this.config_categorias = resp.data;
         }
@@ -146,8 +142,6 @@ export class UpdateProductComponent implements OnInit {
     let file: any;
     if (event.target.files && event.target.files[0]) {
       file = <File>event.target.files[0];
-
-      console.log(file);
     } else {
       iziToast.show({
         title: 'ERROR',
@@ -160,18 +154,14 @@ export class UpdateProductComponent implements OnInit {
     }
 
     if (file?.size! <= 4000000) {
-      console.log('dasdas', file);
       if (this.imagesAllow.includes(file?.type)) {
-        console.log('2222');
         const reader = new FileReader();
         reader.onload = (e) => (this.imgSelect = reader.result);
-        console.log(this.imgSelect);
         reader.readAsDataURL(file);
 
         $('#input-portada').text(file.name);
         this.file = file;
       } else {
-        console.log('33333');
         iziToast.show({
           title: 'ERROR',
           titleColor: '#FF0000',
@@ -200,19 +190,14 @@ export class UpdateProductComponent implements OnInit {
       this.imgSelect = 'assets/img/01.jpg';
       this.file = undefined;
     }
-
-    console.log(this.file);
   }
 
   update() {
     this.submitted = true;
-    console.log('eeeeee', this.getControl);
     if (this.updateForm.invalid) {
       return;
     }
 
-    console.log(this.updateForm.value);
-    console.log(this.file);
     this.load_btn = true;
 
     this.productService

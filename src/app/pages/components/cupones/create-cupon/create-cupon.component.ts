@@ -55,7 +55,7 @@ export class CreateCuponComponent implements OnInit {
     }
 
     this.load_btn = true;
-    console.log('DATAA', this.registerForm.value);
+
     this.cuponService.createCupon(this.registerForm.value).subscribe({
       next: (resp: any) => {
         iziToast.show({

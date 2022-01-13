@@ -36,6 +36,7 @@ export class ClientService {
   }
 
   createClient(formData: any) {
+    console.log('dasdadasdasdas', formData);
     return this.http.post(this.url + '/admin/client', formData, this.headers);
   }
 
@@ -49,5 +50,21 @@ export class ClientService {
 
   deleteClient(id: any) {
     return this.http.delete(this.url + `/admin/client/${id}`, this.headers);
+  }
+
+  getMensajesContacto() {
+    return this.http.get(this.url + `/admin/contacts`, this.headers);
+  }
+
+  closeMensajesContacto(id: any, formData: any) {
+    return this.http.put(
+      this.url + `/admin/contact/${id}`,
+      formData,
+      this.headers
+    );
+  }
+
+  getDetalleOrden(id: any) {
+    return this.http.get(this.url + `/admin/orden-detalle/${id}`, this.headers);
   }
 }

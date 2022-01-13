@@ -40,10 +40,6 @@ export class UpdateCuponComponent implements OnInit {
         next: (resp: any) => {
           this.cupon = resp.data;
 
-          console.log(resp);
-
-          console.log('VALORORORORO', this.cupon.valor);
-
           this.updateForm.setValue({
             codigo: this.cupon.codigo || '',
             tipo: this.cupon.tipo || null,
@@ -85,7 +81,7 @@ export class UpdateCuponComponent implements OnInit {
 
   update() {
     this.submitted = true;
-    console.log('eeeeee', this.getControl);
+
     if (this.updateForm.invalid) {
       return;
     }

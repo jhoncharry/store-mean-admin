@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -9,7 +10,7 @@ import { environment } from 'src/environments/environment';
 export class AdminService {
   private url;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.url = environment.api;
   }
 
@@ -45,6 +46,14 @@ export class AdminService {
     return this.http.post(this.url + 'admin/login', formData);
   }
 
+  // User logout method
+  logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('_id');
+
+    this.router.navigateByUrl('/login');
+  }
+
   // Configuraciones
   getConfig() {
     return this.http.get(this.url + `/admin/config`, this.headers);
@@ -77,5 +86,10 @@ export class AdminService {
         this.headers
       );
     }
+  }
+
+  // Kpi
+  getKpi() {
+    return this.http.get(this.url + `/admin/kpi`, this.headers);
   }
 }

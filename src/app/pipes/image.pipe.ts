@@ -9,7 +9,12 @@ const base_url = environment.api;
 export class ImagePipe implements PipeTransform {
   transform(
     img: string,
-    tipo: 'productos' | 'clientes' | 'configuraciones' | 'productos-galeria'
+    tipo:
+      | 'productos'
+      | 'clientes'
+      | 'configuraciones'
+      | 'promocion'
+      | 'productos-galeria'
   ): string {
     if (!img) {
       return `${base_url}/admin/upload/clientes/no-image`;

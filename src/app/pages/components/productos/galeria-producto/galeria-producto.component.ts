@@ -58,8 +58,6 @@ export class GaleriaProductoComponent implements OnInit {
   initData() {
     this.productService.getProduct(this.id).subscribe({
       next: async (resp: any) => {
-        console.log(resp);
-
         if (resp.data) {
           this.product = resp.data;
         }
@@ -87,8 +85,6 @@ export class GaleriaProductoComponent implements OnInit {
     let file: any;
     if (event.target.files && event.target.files[0]) {
       file = <File>event.target.files[0];
-
-      console.log(file);
     } else {
       iziToast.show({
         title: 'ERROR',
@@ -104,11 +100,9 @@ export class GaleriaProductoComponent implements OnInit {
     }
 
     if (file?.size! <= 4000000) {
-      console.log('dasdas', file);
       if (this.imagesAllow.includes(file?.type)) {
         this.file = file;
       } else {
-        console.log('33333');
         iziToast.show({
           title: 'ERROR',
           titleColor: '#FF0000',
@@ -134,8 +128,6 @@ export class GaleriaProductoComponent implements OnInit {
       this.file = undefined;
       return;
     }
-
-    console.log(this.file);
   }
 
   uploadImage() {
@@ -195,7 +187,6 @@ export class GaleriaProductoComponent implements OnInit {
       .deleteGaleriaProduct(this.product._id, { _id: id })
       .subscribe({
         next: (resp: any) => {
-          console.log('dasdsa', resp);
           iziToast.show({
             title: 'SUCCESS',
             titleColor: '#1DC74C',

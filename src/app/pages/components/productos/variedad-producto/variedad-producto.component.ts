@@ -41,8 +41,6 @@ export class VariedadProductoComponent implements OnInit {
 
       this.productService.getProduct(this.id).subscribe({
         next: async (resp: any) => {
-          console.log(resp);
-
           if (resp.data) {
             this.product = resp.data;
           }

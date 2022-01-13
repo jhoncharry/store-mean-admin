@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdminService } from 'src/app/services/admin.service';
+import { DescuentoService } from 'src/app/services/descuento.service';
 import { ProductService } from 'src/app/services/product.service';
 
 declare var jQuery: any;
@@ -10,11 +11,11 @@ declare var $: any;
 declare var iziToast: any;
 
 @Component({
-  selector: 'app-create-producto',
-  templateUrl: './create-producto.component.html',
-  styleUrls: ['./create-producto.component.css'],
+  selector: 'app-create-descuento',
+  templateUrl: './create-descuento.component.html',
+  styleUrls: ['./create-descuento.component.css'],
 })
-export class CreateProductoComponent implements OnInit {
+export class CreateDescuentoComponent implements OnInit {
   submitted = false;
 
   load_btn = false;
@@ -36,48 +37,36 @@ export class CreateProductoComponent implements OnInit {
   config_categorias: any;
 
   public registerForm = this.fb.group({
-    title: ['Title 1', [Validators.required, Validators.minLength(3)]],
-    stock: ['', [Validators.required]],
-    price: ['', [Validators.required]],
-    categoria: [null, [Validators.required]],
-    description: ['test1@gmail.com', [Validators.required]],
-    contenido: ['', [Validators.required]],
+    titulo: ['Title 1', [Validators.required, Validators.minLength(3)]],
+    fecha_inicio: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/),
+      ],
+    ],
+    fecha_fin: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/),
+      ],
+    ],
+    descuento: [
+      '',
+      [Validators.min(0), Validators.max(100), Validators.required],
+    ],
   });
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private productService: ProductService,
+    private descuentoService: DescuentoService,
     private adminService: AdminService
   ) {
     this.config = {
       height: 500,
     };
-
-    this.adminService.getPublicConfig().subscribe({
-      next: (resp: any) => {
-        if (resp.data) {
-          this.config_categorias = resp.data;
-        }
-
-        this.load_data = false;
-        /* 
-          this.updateForm.reset();
-          this.router.navigateByUrl('/panel/clientes'); */
-      },
-      error: (error) => {
-        this.load_data = false;
-        console.log('error', error);
-        /*         iziToast.show({
-            title: 'ERROR',
-            titleColor: '#FF0000',
-            color: '#FFF',
-            class: 'text-danger',
-            position: 'topRight',
-            message: error.error.message,
-          }); */
-      },
-    });
   }
 
   ngOnInit(): void {}
@@ -85,10 +74,6 @@ export class CreateProductoComponent implements OnInit {
   //Add user form actions
   get getControl() {
     return this.registerForm.controls;
-  }
-
-  changeCategoria($event: any) {
-    this.getControl['categoria'].setValue($event.target.value);
   }
 
   fileChangeEvent(event: any): void {
@@ -110,6 +95,7 @@ export class CreateProductoComponent implements OnInit {
       if (this.imagesAllow.includes(file?.type)) {
         const reader = new FileReader();
         reader.onload = (e) => (this.imgSelect = reader.result);
+
         reader.readAsDataURL(file);
 
         $('#input-portada').text(file.name);
@@ -167,15 +153,15 @@ export class CreateProductoComponent implements OnInit {
         color: '#FFF',
         class: 'text-danger',
         position: 'topRight',
-        message: 'Debes subir una portada',
+        message: 'Debes subir un banner',
       });
       return;
     }
 
     this.load_btn = true;
 
-    this.productService
-      .createProduct(this.registerForm.value, this.file)
+    this.descuentoService
+      .createDescuento(this.registerForm.value, this.file)
       .subscribe({
         next: (resp: any) => {
           iziToast.show({
@@ -184,12 +170,12 @@ export class CreateProductoComponent implements OnInit {
             color: '#FFF',
             class: 'text-success',
             position: 'topRight',
-            message: 'Product successfully registered',
+            message: 'Descuento successfully registered',
           });
 
           this.load_btn = false;
           this.registerForm.reset();
-          this.router.navigateByUrl('/panel/productos');
+          this.router.navigateByUrl('/panel/descuentos');
         },
         error: (error) => {
           console.log('error', error);

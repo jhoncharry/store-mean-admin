@@ -3,8 +3,8 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ImagePipe } from 'src/app/pipes/image.pipe';
 import { AdminService } from 'src/app/services/admin.service';
-
-import { v4 as uuidv4 } from 'uuid';
+import { DescuentoService } from 'src/app/services/descuento.service';
+import { ProductService } from 'src/app/services/product.service';
 
 declare var jQuery: any;
 declare var $: any;
@@ -12,22 +12,21 @@ declare var $: any;
 declare var iziToast: any;
 
 @Component({
-  selector: 'app-config',
-  templateUrl: './config.component.html',
-  styleUrls: ['./config.component.css'],
+  selector: 'app-edit-descuento',
+  templateUrl: './edit-descuento.component.html',
+  styleUrls: ['./edit-descuento.component.css'],
   providers: [ImagePipe],
 })
-export class ConfigComponent implements OnInit {
+export class EditDescuentoComponent implements OnInit {
   submitted = false;
 
   load_btn = false;
   load_data = true;
 
   private id: any;
-  config: any;
+  descuento: any;
 
-  titulo_categoria = '';
-  icono_categoria = '';
+  previewImage: string;
 
   file: File | undefined;
   imgSelect: any | ArrayBuffer = 'assets/img/01.jpg';
@@ -40,45 +39,68 @@ export class ConfigComponent implements OnInit {
     'image/jpeg',
   ];
 
+  config: any = {};
+
+  config_categorias: any;
+
   public updateForm = this.fb.group({
-    titulo: ['', [Validators.required, Validators.minLength(3)]],
-    serie: ['', [Validators.required]],
-    correlativo: ['', [Validators.required, Validators.minLength(2)]],
+    titulo: [' 1', [Validators.required, Validators.minLength(3)]],
+    fecha_inicio: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/),
+      ],
+    ],
+    fecha_fin: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/),
+      ],
+    ],
+    descuento: [
+      '',
+      [Validators.min(0), Validators.max(100), Validators.required],
+    ],
   });
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
+    private descuentoService: DescuentoService,
     private adminService: AdminService,
     private imagePipe: ImagePipe
   ) {
-    this.adminService.getConfig().subscribe({
-      next: (resp: any) => {
-        if (resp.data) {
-          this.config = resp.data;
-        }
+    this.route.params.subscribe((params) => {
+      this.id = params['id'];
 
-        this.updateForm.setValue({
-          titulo: this.config.titulo || '',
-          serie: this.config.serie || '',
-          correlativo: this.config.correlativo || '',
-        });
+      this.descuentoService.getDescuento(this.id).subscribe({
+        next: async (resp: any) => {
+          this.descuento = resp.data;
 
-        this.imgSelect = this.imagePipe.transform(
-          this.config.logo,
-          'configuraciones'
-        );
+          this.updateForm.setValue({
+            titulo: this.descuento.titulo || '',
+            fecha_inicio: this.descuento.fecha_inicio || '',
+            fecha_fin: this.descuento.fecha_fin || '',
+            descuento: this.descuento.descuento || 0,
+          });
 
-        this.load_data = false;
-        /* 
+          this.imgSelect = this.imagePipe.transform(
+            this.descuento.banner,
+            'promocion'
+          );
+
+          this.load_data = false;
+          /* 
           this.updateForm.reset();
           this.router.navigateByUrl('/panel/clientes'); */
-      },
-      error: (error) => {
-        this.load_data = false;
-        console.log('error', error);
-        /*         iziToast.show({
+        },
+        error: (error: any) => {
+          this.load_data = false;
+          console.log('error', error);
+          /*         iziToast.show({
             title: 'ERROR',
             titleColor: '#FF0000',
             color: '#FFF',
@@ -86,7 +108,8 @@ export class ConfigComponent implements OnInit {
             position: 'topRight',
             message: error.error.message,
           }); */
-      },
+        },
+      });
     });
   }
 
@@ -95,34 +118,6 @@ export class ConfigComponent implements OnInit {
   //Add user form actions
   get getControl() {
     return this.updateForm.controls;
-  }
-
-  addCategory() {
-    this.load_data = true;
-
-    let data;
-
-    if (this.titulo_categoria && this.icono_categoria) {
-      this.config.categorias.push({
-        titulo: this.titulo_categoria,
-        icono: this.icono_categoria,
-        _id: uuidv4(),
-      });
-
-      this.titulo_categoria = '';
-      this.icono_categoria = '';
-    } else {
-      // this.initialData();
-      iziToast.show({
-        title: 'ERROR',
-        titleColor: '#FF0000',
-        color: '#FFF',
-        class: 'text-danger',
-        position: 'topRight',
-        message: 'Ingrese un los datos correspondiente',
-      });
-      this.load_data = false;
-    }
   }
 
   fileChangeEvent(event: any): void {
@@ -184,54 +179,40 @@ export class ConfigComponent implements OnInit {
     this.submitted = true;
 
     if (this.updateForm.invalid) {
-      iziToast.show({
-        title: 'ERROR',
-        titleColor: '#FF0000',
-        color: '#FFF',
-        class: 'text-danger',
-        position: 'topRight',
-        message: 'Datos del formulario no son validos',
-      });
       return;
     }
 
     this.load_btn = true;
 
-    let data = {
-      categorias: this.config.categorias || '',
-      ...this.updateForm.value,
-    };
+    this.descuentoService
+      .updateProduct(this.descuento._id, this.updateForm.value, this.file)
+      .subscribe({
+        next: (resp: any) => {
+          iziToast.show({
+            title: 'SUCCESS',
+            titleColor: '#1DC74C',
+            color: '#FFF',
+            class: 'text-success',
+            position: 'topRight',
+            message: 'Descuento successfully updated',
+          });
 
-    this.adminService.updateConfig(this.config._id, data, this.file).subscribe({
-      next: (resp: any) => {
-        iziToast.show({
-          title: 'SUCCESS',
-          titleColor: '#1DC74C',
-          color: '#FFF',
-          class: 'text-success',
-          position: 'topRight',
-          message: 'Cupon successfully updated',
-        });
-
-        this.load_btn = false;
-        this.updateForm.reset();
-        this.router.navigateByUrl('/');
-      },
-      error: (error) => {
-        console.log('error', error);
-        iziToast.show({
-          title: 'ERROR',
-          titleColor: '#FF0000',
-          color: '#FFF',
-          class: 'text-danger',
-          position: 'topRight',
-          message: error.error.message,
-        });
-      },
-    });
-  }
-
-  eliminarCategorias(index: any) {
-    this.config.categorias.splice(index, 1);
+          this.load_btn = false;
+          this.updateForm.reset();
+          this.router.navigateByUrl('/panel/descuentos');
+        },
+        error: (error: any) => {
+          console.log('error', error);
+          iziToast.show({
+            title: 'ERROR',
+            titleColor: '#FF0000',
+            color: '#FFF',
+            class: 'text-danger',
+            position: 'topRight',
+            message: error.error.message,
+          });
+          this.load_btn = false;
+        },
+      });
   }
 }

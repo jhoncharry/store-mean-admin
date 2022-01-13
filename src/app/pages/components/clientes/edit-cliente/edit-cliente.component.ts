@@ -56,8 +56,6 @@ export class EditClienteComponent implements OnInit {
         next: (resp: any) => {
           this.client = resp.data;
 
-          console.log(resp);
-
           this.updateForm.setValue({
             name: this.client.name || '',
             lastname: this.client.lastname || '',
@@ -102,7 +100,7 @@ export class EditClienteComponent implements OnInit {
 
   update() {
     this.submitted = true;
-    console.log('eeeeee', this.getControl);
+
     if (this.updateForm.invalid) {
       return;
     }

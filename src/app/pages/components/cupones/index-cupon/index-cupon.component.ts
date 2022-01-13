@@ -42,15 +42,13 @@ export class IndexCuponComponent implements OnInit {
 
   filtro() {
     this.load_data = true;
-    console.log('dadadasd', this.filtro_codigo);
+
     let filtro;
 
     if (this.filtro_codigo) {
-      console.log('1111');
       filtro = this.filtro_codigo;
       this.cuponService.getCupones(filtro).subscribe({
         next: (resp: any) => {
-          console.log('dasdsa', resp);
           this.cupones = resp.data;
           this.load_data = false;
         },
@@ -81,7 +79,6 @@ export class IndexCuponComponent implements OnInit {
   deleteClient(id: any) {
     this.cuponService.deleteCupon(id).subscribe({
       next: (resp: any) => {
-        console.log('dasdsa', resp);
         iziToast.show({
           title: 'SUCCESS',
           titleColor: '#1DC74C',
